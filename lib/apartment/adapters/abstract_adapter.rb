@@ -22,7 +22,7 @@ module Apartment
           create_tenant(tenant)
 
           switch(tenant) do
-            import_database_schema
+            import_database_schema(tenant)
 
             # Seed data if appropriate
             seed_data if Apartment.seed_after_create
@@ -184,10 +184,12 @@ module Apartment
 
       #   Import the database schema
       #
-      def import_database_schema
-        ActiveRecord::Schema.verbose = false    # do not log schema load output.
-
-        load_or_raise(Apartment.database_schema_file) if Apartment.database_schema_file
+      def import_database_schema(tenant)
+        ActiveRecord::Schema.verbose = true    # do not log schema load output.
+        ENV['DB'] = tenant
+        Rake::Task['db:migrate'].invoke
+        Rake::Task['db:migrate'].reenable
+        ENV['DB'] = nil
       end
 
       #   Return a new config that is multi-tenanted
