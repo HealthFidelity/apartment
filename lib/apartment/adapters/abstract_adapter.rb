@@ -185,7 +185,6 @@ module Apartment
       #   Import the database schema
       #
       def import_database_schema(tenant)
-        ActiveRecord::Schema.verbose = false    # do not log schema load output.
         ENV['DB'] = tenant
         Rake::Task['db:migrate'].invoke
         Rake::Task['db:migrate'].reenable
