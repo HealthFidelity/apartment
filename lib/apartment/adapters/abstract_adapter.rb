@@ -185,6 +185,7 @@ module Apartment
       #   Import the database schema
       #
       def import_database_schema(tenant)
+        puts "called schema"
         ENV['DB'] = tenant
         Rake::Task['db:migrate'].invoke
         Rake::Task['db:migrate'].reenable
