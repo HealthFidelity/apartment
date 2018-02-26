@@ -42,6 +42,10 @@ module Apartment
 
     protected
 
+      def multi_tenantify_with_tenant_db_name(config, tenant)
+        config[:url] = "#{config[:url].gsub(/(\S+)\/.+$/, '\1')}/#{environmentify(tenant)}"
+      end
+
       #   Connect to new tenant
       #
       def connect_to_new(tenant)

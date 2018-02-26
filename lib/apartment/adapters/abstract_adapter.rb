@@ -21,8 +21,8 @@ module Apartment
         run_callbacks :create do
           create_tenant(tenant)
 
-          switch(tenant) do
-            import_database_schema
+          switch_with_connection(tenant) do
+            import_database_schema(tenant)
 
             # Seed data if appropriate
             seed_data if Apartment.seed_after_create
@@ -82,6 +82,27 @@ module Apartment
         begin
           previous_tenant = current
           switch!(tenant)
+          yield
+
+        ensure
+          switch!(previous_tenant) rescue reset
+        end
+      end
+
+      def switch_with_connection!(tenant = nil)
+        run_callbacks :switch do
+          return reset if tenant.nil?
+
+          connect_to_new_connection(tenant).tap do
+            Apartment.connection.clear_query_cache
+          end
+        end
+      end
+
+      def switch_with_connection(tenant)
+        begin
+          previous_tenant = current
+          switch_with_connection!(tenant)
           yield
 
         ensure
@@ -163,6 +184,18 @@ module Apartment
         raise_connect_error!(tenant, exception)
       end
 
+      def connect_to_new_connection(tenant)
+        query_cache_enabled = ActiveRecord::Base.connection.query_cache_enabled
+
+        Apartment.establish_connection multi_tenantify(tenant)
+        Apartment.connection.active?   # call active? to manually check if this connection is valid
+
+        Apartment.connection.enable_query_cache! if query_cache_enabled
+      rescue *rescuable_exceptions => exception
+        Apartment::Tenant.reset if reset_on_connection_exception?
+        raise_connect_error!(tenant, exception)
+      end
+
       #   Prepend the environment if configured and the environment isn't already there
       #
       #   @param {String} tenant Database name
@@ -184,10 +217,11 @@ module Apartment
 
       #   Import the database schema
       #
-      def import_database_schema
-        ActiveRecord::Schema.verbose = false    # do not log schema load output.
-
-        load_or_raise(Apartment.database_schema_file) if Apartment.database_schema_file
+      def import_database_schema(tenant)
+        ENV['DB'] = tenant
+        Rake::Task['db:migrate'].invoke
+        Rake::Task['db:migrate'].reenable
+        ENV['DB'] = nil
       end
 
       #   Return a new config that is multi-tenanted
