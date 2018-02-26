@@ -26,14 +26,6 @@ module Apartment
       Thread.current[:apartment_adapter] ||= begin
         adapter_method = "#{config[:adapter]}_adapter"
 
-        if defined?(JRUBY_VERSION)
-          if config[:adapter] =~ /mysql/
-            adapter_method = 'jdbc_mysql_adapter'
-          elsif config[:adapter] =~ /postgresql/
-            adapter_method = 'jdbc_postgresql_adapter'
-          end
-        end
-
         begin
           require "apartment/adapters/#{adapter_method}"
         rescue LoadError
