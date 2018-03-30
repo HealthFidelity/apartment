@@ -222,6 +222,8 @@ module Apartment
       def import_database_schema(tenant)
         puts "tenant schema called......."
         ENV['DB'] = tenant
+        Rake::Task['db:schema:load'].invoke
+        Rake::Task['db:schema:load'].reenable
         Rake::Task['db:migrate'].invoke
         Rake::Task['db:migrate'].reenable
         ENV['DB'] = nil
