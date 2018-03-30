@@ -19,13 +19,9 @@ module Apartment
       #
       def create(tenant)
         run_callbacks :create do
-          puts "creating tenant"
           create_tenant(tenant)
-          puts "tenant created"
           switch_with_connection(tenant) do
-            puts "running schema"
             import_database_schema(tenant)
-            puts "schema done"
             # Seed data if appropriate
             seed_data if Apartment.seed_after_create
 
@@ -220,14 +216,10 @@ module Apartment
       #   Import the database schema
       #
       def import_database_schema(tenant)
-        puts "tenant schema called......."
         ENV['DB'] = tenant
-        Rake::Task['db:schema:load'].invoke
-        Rake::Task['db:schema:load'].reenable
         Rake::Task['db:migrate'].invoke
         Rake::Task['db:migrate'].reenable
         ENV['DB'] = nil
-        puts "tenant schema done. Yay!"
       rescue => e
         puts e
         puts e.message
