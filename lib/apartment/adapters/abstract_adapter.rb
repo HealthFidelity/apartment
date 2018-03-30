@@ -225,6 +225,10 @@ module Apartment
         Rake::Task['db:migrate'].invoke
         Rake::Task['db:migrate'].reenable
         ENV['DB'] = nil
+        puts "tenant schema done. Yay!"
+      rescue => e
+        puts e
+        puts e.message
       end
 
       #   Return a new config that is multi-tenanted
