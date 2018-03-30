@@ -19,11 +19,13 @@ module Apartment
       #
       def create(tenant)
         run_callbacks :create do
+          puts "creating tenant"
           create_tenant(tenant)
-
+          puts "tenant created"
           switch_with_connection(tenant) do
+            puts "running schema"
             import_database_schema(tenant)
-
+            puts "schema done"
             # Seed data if appropriate
             seed_data if Apartment.seed_after_create
 
