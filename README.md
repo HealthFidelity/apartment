@@ -1,8 +1,8 @@
 # Apartment
 
 [![Gem Version](https://badge.fury.io/rb/apartment.svg)](https://badge.fury.io/rb/apartment)
-[![Code Climate](https://codeclimate.com/github/healthfidelity/apartment/badges/gpa.svg)](https://codeclimate.com/github/healthfidelity/apartment)
-[![Build Status](https://travis-ci.org/healthfidelity/apartment.svg?branch=development)](https://travis-ci.org/healthfidelity/apartment)
+[![Code Climate](https://codeclimate.com/github/HealthFidelity/apartment/badges/gpa.svg)](https://codeclimate.com/github/HealthFidelity/apartment)
+[![Build Status](https://travis-ci.org/HealthFidelity/apartment.svg?branch=development)](https://travis-ci.org/HealthFidelity/apartment)
 
 *Multitenancy for Rails and ActiveRecord*
 
